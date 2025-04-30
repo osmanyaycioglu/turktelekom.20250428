@@ -14,5 +14,4 @@ public class OrderResto {
     @Size(min = 9, max = 12)
     private String customerNumber;
     private String order;
-
 }
