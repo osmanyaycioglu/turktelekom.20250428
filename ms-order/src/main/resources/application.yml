@@ -1,0 +1,49 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
+  port: ${abc:10000}
+  shutdown: graceful
+spring:
+  application:
+    name: order
+  config:
+    import: configserver:http://127.0.0.1:8888
+  lifecycle:
+    timeout-per-shutdown-phase: 5s
+resilience4j:
+  retry:
+    instances:
+      payment1:
+        base-config: base1
+      payment2:
+        base-config: base1
+    configs:
+      base1:
+        max-attempts: 7
+        wait-duration: 1ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        exponential-max-wait-duration: 10ms
+
+  circuitbreaker:
+    instances:
+      cb-payment1:
+        sliding-window-type: count_based
+        sliding-window-size: 20
+        failure-rate-threshold: 30
+        minimum-number-of-calls: 10
+        wait-duration-in-open-state: 2s
+        automatic-transition-from-open-to-half-open-enabled: false
+        permitted-number-of-calls-in-half-open-state: 10
+        slow-call-duration-threshold: 50ms
+        slow-call-rate-threshold: 50
+
+
+
+
